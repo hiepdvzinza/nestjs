@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+  node:
+    container_name: nodejs
+    image: nodejs
+    stdin_open: true
+    build:
+        context: .
+        dockerfile: Dockerfile
+    ports:
+        - "3000:3000"
+    depends_on:
+        - mysql
+    environment:
+        - CHOKIDAR_USEPOLLING=true
+    volumes:
+        - .:/app
+    networks:
+        - app_network
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: study
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./docker/mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 3
+      timeout: 5s
+
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - "8181:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+    depends_on:
+      - mysql
+    networks:
+      - app_network
+
+  # mailhog:
+  #   image: mailhog/mailhog:latest
+  #   restart: always
+  #   ports:
+  #     - "1025:1025"
+  #     - "8025:8025"
+  #   networks:
+  #     - app_network
+
+networks:
+  app_network:
