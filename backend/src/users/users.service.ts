@@ -43,6 +43,19 @@ export class UsersService {
       .getOne();
   }
 
+  findOneByUserName(userName: string): Promise<User | null> {
+    return this.dataSource
+      .getRepository(User)
+      .createQueryBuilder('user')
+      .select()
+      .where('user.email = :email', { userName })
+      .getOne();
+  }
+
+  isValidPassWord(passWord: string, hash: string) {
+      return bcrypt.compareSync(passWord, hash);
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User | null> {
     if ('password' in updateUserDto) delete updateUserDto.password;
 
