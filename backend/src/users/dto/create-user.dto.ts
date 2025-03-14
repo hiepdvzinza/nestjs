@@ -1,4 +1,6 @@
+/* eslint-disable prettier/prettier */
 import { IsString, IsEmail, IsNotEmpty, IsOptional, IsInt, Min, Max, Length } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @IsEmail()
@@ -7,7 +9,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  @Length(6, 50) 
+  @Length(6, 20)
   password: string;
 
   @IsString()
@@ -18,10 +20,12 @@ export class CreateUserDto {
   @IsOptional()
   address?: string;
 
+  @Type(() => String)
   @IsString()
   @IsNotEmpty()
   phone: string;
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @Max(120)
